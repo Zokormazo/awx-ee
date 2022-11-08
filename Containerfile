@@ -28,9 +28,10 @@ COPY --from=galaxy /usr/share/ansible /usr/share/ansible
 
 COPY --from=builder /output/ /output/
 RUN /output/install-from-bindep && rm -rf /output/wheels
-ARG RECEPTOR_IMAGE=quay.io/ansible/receptor:devel
 RUN alternatives --set python /usr/bin/python3
-COPY --from=$RECEPTOR_IMAGE /usr/bin/receptor /usr/bin/receptor
+ARG RECEPTOR_IMAGE=quay.io/ansible/receptor:devel
+FROM $RECEPTOR_IMAGE as receptor_image
+COPY --from=receptor /usr/bin/receptor /usr/bin/receptor
 RUN mkdir -p /var/run/receptor
 ADD run.sh /run.sh
 CMD /run.sh
